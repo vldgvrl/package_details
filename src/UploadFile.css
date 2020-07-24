@@ -1,0 +1,29 @@
+*{
+    padding: 10px;
+}
+
+#detailsBox {
+    border: solid;
+    padding: 5px 0 20px 20px;
+    margin: 20px auto;
+}
+#title h1{
+    text-align: center;
+}
+
+#input_file {
+    width: 500px;
+    border: solid;
+    padding: 10px 0 20px 20px;
+    margin: 20px auto;
+    display: inline-block;
+    border-radius: 5px;
+    border-color: lightgray;
+}
+#info {
+    width: 500px;
+    display: inline-block;
+    margin: 20px auto;
+    padding: 10px 0px 20px 40px;
+    color:green;
+}
