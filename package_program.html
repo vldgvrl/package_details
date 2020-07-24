@@ -45,6 +45,7 @@ systems through the /var/lib/dpkg/status file</h1></div>
     var activePackageID = 0;
 
     //Package list (all package information in one row)
+    var contents;
     var packageList;
 
     //array with all dependencies
@@ -52,8 +53,45 @@ systems through the /var/lib/dpkg/status file</h1></div>
     
     //ArrayList for reverse dependencies
     var arrayReverse = [];
-   
-   //======Open the status file=====
+
+  function UploadFile(){
+
+      const [listitems, setLink] = useState([]);
+
+      const addLink = (i, n) => {
+            setLink(listitems => listitems.concat({id: i, name: n}))
+      };
+
+      const getListItems = listitems.map((listitem) =>
+                <li><a onClick={() => showDetails(listitem.id)} href="#">{listitem.name}</a></li>
+            );
+
+
+    const [test, setTest] = useState();
+
+    const testrun = ({id}) => <li><a onClick={() => showDetails({id})}>PackageNameTEST</a></li>
+
+
+    return(
+       <div>
+            <div id="header">
+                <div id="input_file">
+                    <p>Choose the status file,<br /> pressing this button: <input type="file" id="fileinput" onChange={readStatusFile} /></p>
+                </div>
+                <div id="info"></div>
+            </div>
+            <div id="detailsBox">
+                <p id="details">This box shows details of the chosen package</p>
+            </div>
+            <ul id="text">
+                    {getListItems}
+	      <li><a onClick={() => showDetails(0)} href='#'>PackName</a></li>
+            </ul>
+       </div> 
+    );
+
+
+     //======Open the status file=====
 
   function readStatusFile(evt) {
     var f = evt.target.files[0];   
@@ -61,26 +99,28 @@ systems through the /var/lib/dpkg/status file</h1></div>
     if (f) {
       var r = new FileReader();
       r.onload = function(e) { 
-          var contents = e.target.result;             
+          contents = e.target.result;             
           var ct = r.result;
-	  packageList = contents.split('Package: '); //One package in one row (with \n)
-	  packageList.shift(); //Delete word package from list
-	  packageList.sort(); //Sort packages alphabetically
 
-	  //Onload also show the list of packages with links
-	  for (i=0; i<packageList.length; i++){
+          packageList = contents.split('Package: '); //One package in one row (with \n)
+          packageList.shift(); //Delete word package from list
+          packageList.sort(); //Sort packages alphabetically
 
-	      //packageLine is the list of rows per one package
-	      var packageLine = packageList[i].split('\n');
+          //Onload also show the list of packages with links
+          for (var i=0; i<packageList.length; i++){
 
-	      elem.insertAdjacentHTML("beforeend", "<li><a onclick='showDetails(" + i + ")' href='#'>" + packageLine[0] + "</a></li>");
+              //packageLine is the list of rows per one package
+              var packageLine = packageList[i].split('\n');
+              addLink(i, packageLine[0]);
 
-	  }
+
+          }
+
 
 	  var infoBox = document.getElementById("info").insertAdjacentHTML("beforeend",  "On the page should be shown the list of the packages. If there is no any packages next to detail box, check the opened file"); 
 	  
 	//Make the list with all dependencies
-	findingAllDependencies();
+	//findingAllDependencies();
     } 
       r.readAsText(f);
     } else { 
@@ -88,8 +128,44 @@ systems through the /var/lib/dpkg/status file</h1></div>
     }
   }
   //=====End open function=====
+}
+  function ShowPackageList(){
+      
+      const listitems = [];
+      const getListItems = listitems.map((listitem) =>
+                <li><a onClick={() => showDetails(listitem.id)}></a>{listitem.name}</li>
+            );
 
-  document.getElementById('fileinput').addEventListener('change', readStatusFile, false);
+
+      if (listitems != null){
+                    return(
+                        <h3>There is no file to read </h3>
+                        
+
+                    );
+      }  else {
+
+              packageList = contents.split('Package: '); //One package in one row (with \n)
+              packageList.shift(); //Delete word package from list
+              packageList.sort(); //Sort packages alphabetically
+
+              //Onload also show the list of packages with links
+              for (var i=0; i<packageList.length; i++){
+
+                  //packageLine is the list of rows per one package
+                  var packageLine = packageList[i].split('\n');
+                  listitems.push({id: i, name: packageLine[0]});
+
+
+              }
+
+              return(
+                {getListItems}
+              );
+
+      }
+  }
+
 
     //=====Function makes the list of dependencies lists=====
     function findingAllDependencies(){
@@ -192,11 +268,12 @@ systems through the /var/lib/dpkg/status file</h1></div>
 
     }
 
+
+  
+
     //=====Function write all information about the package=====
     //paarameter 'number' is a ID of the invited package 
     function showDetails(number){
-	
-	document.getElementById("header").innerHTML = "";
 
 
 	var detailsBox = document.getElementById("detailsBox");
@@ -216,7 +293,6 @@ systems through the /var/lib/dpkg/status file</h1></div>
 		
 	    details.insertAdjacentHTML("beforeend", packageLine[c] + "<br>");
 	    
-
 	}*/
 
 	    //Define which lines include Description part and return 2 lines: first and last
@@ -385,9 +461,5 @@ systems through the /var/lib/dpkg/status file</h1></div>
 	}	
     }
 
-    
-</script>
-</head>
-<body>
-</body>
-</html>
+
+export default UploadFile;
